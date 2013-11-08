@@ -8,8 +8,12 @@ function populateSubs(menu) {
 		new Menu(menu,"crap",new Array(1)),
 	];
 	menu.subs[1].subs = [
-		new Menu(menu.subs[1],"gcc",new Array(0)),
+		new Menu(menu.subs[1],"gcc",new Array(1)),
 		new Menu(menu.subs[1],"gdb",new Array(0)),
+	];
+
+	menu.subs[1].subs[0].subs = [
+		new Package(menu.subs[1].subs[0],"thispackage","GPLv2","2.0.1","PORKCHOPSANDWICHES","TSWO_SOFTWARE_thispackage"),
 	];
 
 	menu.subs[2].subs = [
@@ -57,13 +61,14 @@ PackageContainer.prototype.showNext = function(next) {
 }
 
 /* A package, with details */
-function Package(menu) {
+function Package(menu,name,lic,ver,help,token) {
 	// where is this package in menu
 	this.parentMenu = menu;
 	// ui package details
-	this.license = "";
-	this.version = "";
-	this.help = "";
+	this.name = name;
+	this.license = lic;
+	this.version = ver;
+	this.help = help;
 	// what packages/names does this select?
 	this.selects = new Array(0);
 	// token should be passed to factory 'TSWO_SOFTWARE_foo=y'
@@ -78,6 +83,40 @@ function Package(menu) {
 
 Package.prototype.isSelected = function() {
 	return (required > 0 || user_selected);
+}
+
+Package.prototype.getMenuLink = function(style) {
+	var lbldiv = document.createElement("div");
+	//FIXME: Add selection checkbox, using isSelected
+	var lbl = document.createElement("a");
+	lbl.appendChild(document.createTextNode(this.label));
+	var me = this;
+	lbl.onclick = function () { pkgContInst.showNext(me); };
+	lbl.className=style;
+	lbldiv.appendChild(lbl);
+	return lbldiv;
+}
+
+Package.prototype.getView = function() {
+	var view = document.createElement("div");
+	view.appendChild(this.parentMenu.getMenuLink("parent-menu"));
+	// wrap all package details in one div --probably pointless for now.
+	var div = document.createElement("div");
+	div.className = "package";
+	view.appendChild(div);
+	var div = document.createElement("div");
+	div.appendChild(document.createTextNode(this.name));
+	view.appendChild(div);
+	var div = document.createElement("div");
+	div.appendChild(document.createTextNode(this.version));
+	view.appendChild(div);
+	var div = document.createElement("div");
+	div.appendChild(document.createTextNode(this.license));
+	view.appendChild(div);
+	var div = document.createElement("div");
+	div.appendChild(document.createTextNode(this.help));
+	view.appendChild(div);
+	return view;
 }
 
 /* A menu item. */
