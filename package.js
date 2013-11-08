@@ -6,26 +6,28 @@ function onClickShowNext(e) {
 
 var pkgContInst = null;
 
-function PackageContainer(element) {
+function PackageContainer(element,menus) {
 	pkgContInst = this;
 	// create a global package hash
 	this.packageHash = new Array(0);
 	// top-level array of menusc
-	this.topMenu = new Menu("Categories", [
-		new Menu("nothinghere", []),
-		new Menu("development", [
-			new Menu("gcc", [
-				new Package("thispackage","GPLv2","2.0.1","PORKCHOPSANDWICHES","TSWO_SOFTWARE_thispackage"),
+	if (menus == null) {
+		this.topMenu = new Menu("Categories", [
+			new Menu("nothinghere", []),
+			new Menu("development", [
+				new Menu("gcc", [
+					new Package("thispackage","GPLv2","2.0.1","PORKCHOPSANDWICHES","TSWO_SOFTWARE_thispackage"),
+				]),
+				new Menu("gdb", []),
 			]),
-			new Menu("gdb", []),
-		]),
-		new Menu("crap", [
-			new Menu("foo", []),
-		]),
-		new Menu("crap2", [
-			new Menu("foo2", []),
-		]),
-	]);
+			new Menu("crap", [
+				new Menu("foo", []),
+			]),
+			new Menu("crap2", [
+				new Menu("foo2", []),
+			]),
+		]);
+	}
 
 	// create current menu
 	this.active = document.createElement("div");
