@@ -28,9 +28,9 @@ function PackageContainer(element) {
 	]);
 
 	// create current menu
-	this.active = document.createElement("menu1");
+	this.active = document.createElement("div");
 	this.active.className = "menu";
-	this.backbuffer = document.createElement("menu2");
+	this.backbuffer = document.createElement("div");
 	this.backbuffer.className = "menu";
 
 	var container = document.getElementById(element);
