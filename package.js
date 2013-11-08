@@ -41,7 +41,7 @@ function PackageContainer(element) {
 }
 
 PackageContainer.prototype.showNext = function(next) {
-	if (next == null || next.subs.length == 0) return;
+	if (next == null || (next instanceof Menu && next.subs.length == 0)) return;
 	var old = this.active;
 	this.active = this.backbuffer;
 	this.active.style.display = "block";
