@@ -119,14 +119,14 @@ function Menu(name,subs) {
 	// children will be either menus, or packages
 	this.subs = subs;
 	this.parentMenu = null;
-	for(var e in subs)
-		e.parentMenu = this;
+	for(var i = 0; i < this.subs.length; i++)
+		this.subs[i].parentMenu = this;
 }
 Menu.prototype.toString = function() { return "Menu:" + this.label; }
 
 // where in the menu tree are we, show the user calculate here, recursive search thru parents
 Menu.prototype.whereami = function () {
-	while (this.parentMenu != null) {
+	if (this.parentMenu != null) {
 		return (this.parentMenu.whereami() + " / " + this.label);
 	}
 	return this.label;
