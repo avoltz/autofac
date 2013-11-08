@@ -1,5 +1,8 @@
 // FIXME: search for fixmes.
 
+function onClickShowNext(e) {
+	pkgContInst.showNext(this.factoryItem);
+}
 
 var pkgContInst = null;
 
@@ -80,8 +83,8 @@ Package.prototype.getMenuLink = function(style) {
 	//FIXME: Add selection checkbox, using isSelected
 	var lbl = document.createElement("a");
 	lbl.appendChild(document.createTextNode(this.label));
-	var me = this;
-	lbl.onclick = function () { pkgContInst.showNext(me); };
+	lbl.factoryItem = this;
+	lbl.onclick = onClickShowNext;
 	lbl.className=style;
 	lbldiv.appendChild(lbl);
 	return lbldiv;
@@ -132,8 +135,8 @@ Menu.prototype.getMenuLink = function(style) {
 	var lbldiv = document.createElement("div");
 	var lbl = document.createElement("a");
 	lbl.appendChild(document.createTextNode(this.label));
-	var me = this;
-	lbl.onclick = function () { pkgContInst.showNext(me); };
+	lbl.factoryItem = this;
+	lbl.onclick = onClickShowNext;
 	lbl.className=style;
 	lbldiv.appendChild(lbl);
 	return lbldiv;
