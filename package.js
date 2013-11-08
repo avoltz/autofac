@@ -1,25 +1,5 @@
 // FIXME: search for fixmes.
 
-function populateSubs(menu) {
-/* test data */
-	menu.subs = [
-		new Menu(menu,"nothinghere",new Array(0)),
-		new Menu(menu,"development", new Array(2)),
-		new Menu(menu,"crap",new Array(1)),
-	];
-	menu.subs[1].subs = [
-		new Menu(menu.subs[1],"gcc",new Array(1)),
-		new Menu(menu.subs[1],"gdb",new Array(0)),
-	];
-
-	menu.subs[1].subs[0].subs = [
-		new Package(menu.subs[1].subs[0],"thispackage","GPLv2","2.0.1","PORKCHOPSANDWICHES","TSWO_SOFTWARE_thispackage"),
-	];
-
-	menu.subs[2].subs = [
-		new Menu(menu.subs[2],"foo",new Array(0)),
-	];
-}
 
 var pkgContInst = null;
 
@@ -28,9 +8,21 @@ function PackageContainer(element) {
 	// create a global package hash
 	this.packageHash = new Array(0);
 	// top-level array of menusc
-	this.topMenu = new Menu(null,"Categories",new Array(0));
-	
-	populateSubs(this.topMenu);
+	this.topMenu = new Menu("Categories", [
+		new Menu("nothinghere", []),
+		new Menu("development", [
+			new Menu("gcc", [
+				new Package("thispackage","GPLv2","2.0.1","PORKCHOPSANDWICHES","TSWO_SOFTWARE_thispackage"),
+			]),
+			new Menu("gdb", []),
+		]),
+		new Menu("crap", [
+			new Menu("foo", []),
+		]),
+		new Menu("crap2", [
+			new Menu("foo2", []),
+		]),
+	]);
 
 	// create current menu
 	this.active = document.createElement("menu1");
@@ -61,9 +53,7 @@ PackageContainer.prototype.showNext = function(next) {
 }
 
 /* A package, with details */
-function Package(menu,name,lic,ver,help,token) {
-	// where is this package in menu
-	this.parentMenu = menu;
+function Package(name,lic,ver,help,token) {
 	// ui package details
 	this.name = name;
 	this.license = lic;
@@ -120,11 +110,13 @@ Package.prototype.getView = function() {
 }
 
 /* A menu item. */
-function Menu(parent,name,subs) {
-	this.parentMenu = parent;
+function Menu(name,subs) {
 	this.label = (name == null ? "" : name);
 	// children will be either menus, or packages
 	this.subs = subs;
+	this.parentMenu = null;
+	for(var e in subs)
+		e.parentMenu = this;
 }
 
 // where in the menu tree are we, show the user calculate here, recursive search thru parents
