@@ -2,6 +2,28 @@
 <head>
 <meta charset="UTF-8">
 <script src="package.js"></script>
+<script type="text/javascript">
+var testMenu = new Menu("Categories", [
+	new Menu("nothinghere", []),
+	new Menu("development", [
+		new Menu("gcc", [
+			new Package("thispackage","GPLv2","2.0.1","PORKCHOPSANDWICHES","TSWO_SOFTWARE_thispackage"),
+			]),
+		new Menu("gdb", []),
+		]),
+		new Menu("crap", [
+			new Menu("foo", []),
+		]),
+		new Menu("crap2", [
+			new Menu("foo2", []),
+		]),
+	]);
+
+	// create current menu
+	this.active = document.createElement("div");
+	this.active.className = "menu";
+	this.backbuffer = document.createElement("div");
+</script>
 <link rel="stylesheet" href="packages.css"/>
 </head>
 <body>
@@ -9,7 +31,7 @@
 	<div id="derp"> </div>
 
 	<script type="text/javascript">
-		var containerPackages = new PackageContainer("herp","derp");
+		var containerPackages = new PackageContainer("herp","derp",testMenu);
 	</script>
 </body>
 </html>

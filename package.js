@@ -10,24 +10,8 @@ function PackageContainer(searchDiv,pkgDiv,menus) {
 	pkgContInst = this;
 	// create a global package hash
 	this.packageHash = new Array(0);
-	// top-level array of menusc
-	if (menus == null) {
-		this.topMenu = new Menu("Categories", [
-			new Menu("nothinghere", []),
-			new Menu("development", [
-				new Menu("gcc", [
-					new Package("thispackage","GPLv2","2.0.1","PORKCHOPSANDWICHES","TSWO_SOFTWARE_thispackage"),
-				]),
-				new Menu("gdb", []),
-			]),
-			new Menu("crap", [
-				new Menu("foo", []),
-			]),
-			new Menu("crap2", [
-				new Menu("foo2", []),
-			]),
-		]);
-	}
+	// top-level array of menus
+	this.topMenu = menus;
 
 	// create current menu
 	this.active = document.createElement("div");
@@ -84,9 +68,8 @@ function Package(name,lic,ver,help,token) {
 	// these tokens indicate if it is user selected or required
 	// by another package
 	this.user_selected = false;
-	// if nonzero, this is included in build, by a selected package
-	// FIXME: Maybe this should be a hash as well? so it would be easily shown who is selecting...
-	this.required = 0;
+	// which selected package requires this
+	this.required_by = new Array(0);
 }
 Package.prototype.toString = function() { return "Pkg:" + this.token; }
 
