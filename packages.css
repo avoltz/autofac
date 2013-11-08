@@ -1,0 +1,33 @@
+#derp {
+ position: relative;
+ background: green;
+ height: 8em;
+ overflow-y: scroll;
+}
+a.parent-menu {
+border-style:solid;
+border-width:1px;
+font-size: small;
+}
+div.menu {
+ position: absolute;
+ top: 0; left: 0;
+}
+div.menu span {
+ font-weight: bold;
+}
+
+a.menu {
+font-style: italic;
+background: white;
+padding: 1px;
+}
+
+#menu1 {
+ background: red;
+ display: block;
+}
+#menu2 {
+ background: blue;
+ display: none;
+}
