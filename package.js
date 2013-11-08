@@ -65,7 +65,7 @@ function Package(name,lic,ver,help,token) {
 	// what packages/names does this select?
 	this.selects = new Array(0);
 	// token should be passed to factory 'TSWO_SOFTWARE_foo=y'
-	this.token = "";
+	this.token = token;
 	// these tokens indicate if it is user selected or required
 	// by another package
 	this.user_selected = false;
@@ -73,6 +73,7 @@ function Package(name,lic,ver,help,token) {
 	// FIXME: Maybe this should be a hash as well? so it would be easily shown who is selecting...
 	this.required = 0;
 }
+Package.prototype.toString = function() { return "Pkg:" + this.token; }
 
 Package.prototype.isSelected = function() {
 	return (required > 0 || user_selected);
@@ -121,6 +122,7 @@ function Menu(name,subs) {
 	for(var e in subs)
 		e.parentMenu = this;
 }
+Menu.prototype.toString = function() { return "Menu:" + this.label; }
 
 // where in the menu tree are we, show the user calculate here, recursive search thru parents
 Menu.prototype.whereami = function () {
