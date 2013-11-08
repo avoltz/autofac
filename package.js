@@ -6,7 +6,7 @@ function onClickShowNext(e) {
 
 var pkgContInst = null;
 
-function PackageContainer(element,menus) {
+function PackageContainer(searchDiv,pkgDiv,menus) {
 	pkgContInst = this;
 	// create a global package hash
 	this.packageHash = new Array(0);
@@ -35,7 +35,20 @@ function PackageContainer(element,menus) {
 	this.backbuffer = document.createElement("div");
 	this.backbuffer.className = "menu";
 
-	var container = document.getElementById(element);
+	// populate the search container with our widgets
+	var container = document.getElementById(searchDiv);
+	container.appendChild(document.createElement("div"));
+	this.searchText = document.createElement("input");
+	this.searchText.type = "text";
+	container.appendChild(this.searchText);
+	var div = document.createElement("button");
+	div.appendChild(document.createTextNode("Search"));
+	container.appendChild(div);
+	this.searchResult = document.createElement("div");
+	container.appendChild(this.searchResult);
+	
+	container = document.getElementById(pkgDiv);
+	// then the package container with nav divs
 	container.appendChild(this.active);
 	container.appendChild(this.backbuffer);
 
