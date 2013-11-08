@@ -82,7 +82,7 @@ Package.prototype.getMenuLink = function(style) {
 	var lbldiv = document.createElement("div");
 	//FIXME: Add selection checkbox, using isSelected
 	var lbl = document.createElement("a");
-	lbl.appendChild(document.createTextNode(this.label));
+	lbl.appendChild(document.createTextNode(this.name));
 	lbl.factoryItem = this;
 	lbl.onclick = onClickShowNext;
 	lbl.className=style;
