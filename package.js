@@ -8,8 +8,6 @@ var pkgContInst = null;
 
 function PackageContainer(searchDiv,pkgDiv,menus) {
 	pkgContInst = this;
-	// create a global package hash
-	this.packageHash = new Array(0);
 	// top-level array of menus
 	this.topMenu = menus;
 
@@ -70,8 +68,10 @@ function Package(name,lic,ver,help,token) {
 	this.user_selected = false;
 	// which selected package requires this
 	this.required_by = new Array(0);
+	Package.packageHash[this.token] = this; // reflexive reference
 }
 Package.prototype.toString = function() { return "Pkg:" + this.token; }
+Package.packageHash = new Object();
 
 Package.prototype.isSelected = function() {
 	return (required > 0 || user_selected);
