@@ -36,7 +36,7 @@ function PackageContainer(searchDiv,pkgDiv,menus) {
 	container.appendChild(this.active);
 	container.appendChild(this.backbuffer);
 
-	this.active.appendChild(this.topMenu.getView());
+	this.showNext(this.topMenu);
 }
 
 PackageContainer.prototype.showNext = function(next) {

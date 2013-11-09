@@ -22,12 +22,3 @@ font-style: italic;
 background: white;
 padding: 1px;
 }
-
-#menu1 {
- background: red;
- display: block;
-}
-#menu2 {
- background: blue;
- display: none;
-}
