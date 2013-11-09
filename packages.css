@@ -1,8 +1,6 @@
 #derp {
  position: relative;
  background: green;
- height: 8em;
- overflow-y: scroll;
 }
 a.parent-menu {
 border-style:solid;
@@ -12,6 +10,7 @@ font-size: small;
 div.menu {
  position: absolute;
  top: 0; left: 0;
+ background: blue;
 }
 div.menu span {
  font-weight: bold;

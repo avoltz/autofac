@@ -29,10 +29,11 @@ function PackageContainer(searchDiv,pkgDiv,menus) {
 	this.searchResult = document.createElement("div");
 	container.appendChild(this.searchResult);
 	
-	container = document.getElementById(pkgDiv);
+	this.container = document.getElementById(pkgDiv);
 	// then the package container with nav divs
-	container.appendChild(this.active);
-	container.appendChild(this.backbuffer);
+	this.container.appendChild(this.active);
+	this.container.appendChild(this.backbuffer);
+	this.containerHeight = 0;
 
 	this.showNext(this.topMenu);
 }
@@ -50,6 +51,14 @@ PackageContainer.prototype.showNext = function(next) {
 	// Change display so that the two won't be visible at the same time.
 	this.backbuffer.style.display = "none";
 	this.active.style.display = "block";
+
+	// Only decrease the height when significant to reduce lower-page jitter
+	var menuHeight = this.active.clientHeight;
+	if (menuHeight > this.containerHeight
+	||  menuHeight < this.containerHeight - 100) {
+		this.container.style.height = menuHeight + "px";
+		this.containerHeight = menuHeight;
+	}
 
 	// Dispose of unwanted content now that it can't be seen.
 	while(old.childNodes.length)
