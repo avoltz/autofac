@@ -4,25 +4,37 @@ function onClickShowNext(e) {
 	pkgContInst.showNext(this.factoryItem);
 }
 
-function createEmptyElement(element, clas) {
+function createElement(element, clas) {
 	var node = document.createElement(element);
 	if(clas) node.className = clas;
 	return node;
 }
-function createElement(element, clas, contents) {
+function createElements(element, clas, contents) {
 	// For aesthetic reasons, the second argument is the optional one
 	if(arguments.length == 2) {
 		contents = clas;
 		clas = '';
 	}
-	var node = createEmptyElement(element, clas);
-	if(contents) {
-		if(typeof contents == "string")
-			node.appendChild(document.createTextNode(contents));
-		else
-			node.appendChild(contents);
-	}
+	var node = createElement(element, clas);
+	createElementsAppend(node, contents);
 	return node;
+}
+function createElementsAppend(node, contents) {
+	switch (typeof contents) {
+	case "string":
+		node.appendChild(document.createTextNode(contents));
+		break;
+	case undefined:
+		// Prevent catch-all if no items were provided.
+		break;
+	default:
+		if (contents instanceof Array) {
+			for(var i=0; i<contents.length; i++)
+				createElementsAppend(node, contents[i]);
+		} else {
+			node.appendChild(contents);
+		}
+	}
 }
 
 var pkgContInst = null;
@@ -34,28 +46,22 @@ function PackageContainer(containerDiv, menus) {
 	this.topMenu = menus;
 
 	// create current menu
-	this.active = document.createElement("div");
-	this.active.className = "menu";
-	this.backbuffer = document.createElement("div");
-	this.backbuffer.className = "menu";
+	this.active = createElement("div", "menu");
+	this.backbuffer = createElement("div", "menu");
 
 	// populate the search container with our widgets
-	var searchDiv = document.createElement("div");
-	searchDiv.appendChild(document.createElement("div"));
-	this.searchText = document.createElement("input");
+	this.searchText = createElement("input");
 	this.searchText.type = "text";
-	searchDiv.appendChild(this.searchText);
-	var div = document.createElement("button");
-	div.appendChild(document.createTextNode("Search"));
-	searchDiv.appendChild(div);
-	this.searchResult = document.createElement("div");
-	searchDiv.appendChild(this.searchResult);
+	this.searchResult = createElement("div");
+	var searchDiv = createElements("div", [
+		//createElement("div"), // XXX Why is an unreferenced DIV here?
+		this.searchText,
+		createElements("button", "Search"),
+		this.searchResult ]);
 	
-	this.container = document.createElement("div");
-	this.container.className = "menucontainer";
 	// then the package container with nav divs
-	this.container.appendChild(this.active);
-	this.container.appendChild(this.backbuffer);
+	this.container = createElements("div", "menucontainer",
+					[this.active, this.backbuffer]);
 	this.containerHeight = 0;
 
 	if (typeof containerDiv == "string")
@@ -98,22 +104,21 @@ function MenuConfig(mcDiv, file, title, helptxt, menus) {
 	if (typeof mcDiv == "string")
 		mcDiv = document.getElementById(mcDiv);
 
-	mcDiv.appendChild(createElement("div", "cfg_header",
+	mcDiv.appendChild(createElements("div", "cfg_header",
 					file + ' - ' + title));
-	mcDiv.appendChild(createEmptyElement("hr"));
+	mcDiv.appendChild(createElement("hr"));
 
-	var internal = createElement("div", "cfg_internal", helptxt);
-	var menuDiv = createEmptyElement("div", "cfg_menu");
-	internal.appendChild(menuDiv);
-
-	var fg = createElement("div", "cfg_foreground",
-			createElement("div", "cfg_internal_header",
-				createElement("span", title)));
-	fg.appendChild(internal);
+	var menuDiv = createElement("div", "cfg_menu");
 	//TODO: Make these actual buttons that do something
-	var control = createElement("div", "cfg_control",
+	var control = createElements("div", "cfg_control",
 				    "<Select> <Exit> <Help>");
-	fg.appendChild(control);
+
+	var fg = createElements("div", "cfg_foreground", [
+			createElements("div", "cfg_internal_header",
+				createElements("span", title)),
+			createElements("div", "cfg_internal",
+				[ helptxt, menuDiv ]),
+			control]);
 	mcDiv.appendChild(fg);
 
 	PackageContainer.call(this, menuDiv, menus);
@@ -147,37 +152,23 @@ Package.prototype.isSelected = function() {
 }
 
 Package.prototype.getMenuLink = function(style) {
-	var lbldiv = document.createElement("div");
 	//FIXME: Add selection checkbox, using isSelected
-	var lbl = document.createElement("a");
-	lbl.appendChild(document.createTextNode(this.name));
+	var lbl = createElements("a", style, this.name);
 	lbl.factoryItem = this;
 	lbl.onclick = onClickShowNext;
 	lbl.href = "javascript:void(0)";
-	lbl.className=style;
-	lbldiv.appendChild(lbl);
-	return lbldiv;
+	return createElements("div", lbl);
 }
 
 Package.prototype.getView = function() {
-	var view = document.createElement("div");
-	view.appendChild(this.parentMenu.getMenuLink("parent-menu"));
-	// wrap all package details in one div --probably pointless for now.
-	var div = document.createElement("div");
-	div.className = "package";
-	view.appendChild(div);
-	var div = document.createElement("div");
-	div.appendChild(document.createTextNode(this.name));
-	view.appendChild(div);
-	var div = document.createElement("div");
-	div.appendChild(document.createTextNode(this.version));
-	view.appendChild(div);
-	var div = document.createElement("div");
-	div.appendChild(document.createTextNode(this.license));
-	view.appendChild(div);
-	var div = document.createElement("div");
-	div.appendChild(document.createTextNode(this.help));
-	view.appendChild(div);
+	var view = createElements("div", [
+				  this.parentMenu.getMenuLink("parent-menu"),
+				  //createElement("div", "package"),
+				  createElements("div", this.name),
+				  createElements("div", this.version),
+				  createElements("div", this.license),
+				  createElements("div", this.help),
+				]);
 	return view;
 }
 
@@ -202,15 +193,12 @@ Menu.prototype.whereami = function () {
 
 // return a DOM element showing a menu label
 Menu.prototype.getMenuLink = function(style) {
-	var lbldiv = document.createElement("div");
-	var lbl = document.createElement("a");
-	lbl.appendChild(document.createTextNode(this.label));
+	var lbldiv = createElement("div");
+	var lbl = createElements("a", style, this.label);
 	lbl.factoryItem = this;
 	lbl.onclick = onClickShowNext;
 	lbl.href = "javascript:void(0)";
-	lbl.className=style;
-	lbldiv.appendChild(lbl);
-	return lbldiv;
+	return createElements("div", lbl);
 }
 
 /* Each menu has a label, a parent (or null if top-level),
@@ -220,20 +208,16 @@ Menu.prototype.getView = function() {
 	//show path back
 	var view;
 	if (this.parentMenu == null) {
-		view = document.createElement("div");
+		view = createElement("div");
 	} else { 
 		view = this.parentMenu.getMenuLink("parent-menu");
 	}
-	var div = document.createElement("div");
-	div.className = "menu-location";
+	var div = createElements("div", "menu-location", this.whereami());
 	// then location
-	var whereami = this.whereami();
 	view.appendChild(div);
 	
-	view.appendChild(document.createTextNode(whereami));
 	// finally children
-	div = document.createElement("div");
-	div.className = "menu";
+	div = createElement("div", "menu");
 	view.appendChild(div);
 	for (var i = 0; i < this.subs.length; i++) {
 		view.appendChild(this.subs[i].getMenuLink("menu"));
