@@ -2,8 +2,16 @@
 <head>
 <meta charset="UTF-8">
 <script src="package.js"></script>
-<script type="text/javascript">
-var testMenu = new Menu("Categories", [
+<link rel="stylesheet" href="packages.css"/>
+</head>
+<body>
+	<div id="menuconfig" class="menuconfig"></div>
+
+	<script type="text/javascript">
+		var menuconfig = new MenuConfig("menuconfig", ".config",
+			"TimeSys Web Factory Package Selection",
+			'Use your on-screen pointing device to select packages. Clicking again deselects.  Left click to enter submenus.',
+new Menu("Categories", [
 	new Menu("nothinghere", []),
 	new Menu("development", [
 		new Menu("gcc", [
@@ -14,20 +22,21 @@ var testMenu = new Menu("Categories", [
 		new Menu("crap", [
 			new Menu("foo", []),
 		]),
-		new Menu("crap2", [
-			new Menu("foo2", []),
+		new Menu("embiggen", [
+			new Package("badger","GPLv2","1.1","badger badger badger badger badger MUSHROOM MUSHROOM","TSWO_SOFTWARE_badger"),
+			new Package("badger","GPLv2","1.2","badger badger badger badger badger MUSHROOM MUSHROOM","TSWO_SOFTWARE_badger2"),
+			new Package("badger","GPLv2","1.3","badger badger badger badger badger MUSHROOM MUSHROOM","TSWO_SOFTWARE_badger3"),
+			new Package("badger","GPLv2","1.4","badger badger badger badger badger MUSHROOM MUSHROOM","TSWO_SOFTWARE_badger4"),
+			new Package("badger","GPLv2","1.5","badger badger badger badger badger MUSHROOM MUSHROOM","TSWO_SOFTWARE_badger5"),
+			new Package("badger","GPLv2","1.6","badger badger badger badger badger MUSHROOM MUSHROOM","TSWO_SOFTWARE_badger6"),
+			new Package("badger","GPLv2","1.7","badger badger badger badger badger MUSHROOM MUSHROOM","TSWO_SOFTWARE_badger7"),
+			new Package("badger","GPLv2","1.8","badger badger badger badger badger MUSHROOM MUSHROOM","TSWO_SOFTWARE_badger8"),
+			new Package("badger","GPLv2","1.9","badger badger badger badger badger MUSHROOM MUSHROOM","TSWO_SOFTWARE_badger9"),
+			new Package("MUSHROOM","GPLv2","1.1","badger badger badger badger badger MUSHROOM MUSHROOM","TSWO_SOFTWARE_mushroom"),
+			new Package("MUSHROOM","GPLv2","1.2","badger badger badger badger badger MUSHROOM MUSHROOM","TSWO_SOFTWARE_mushroom2"),
+			new Package("snake","GPLv2","5.5","Snake! Snake! Ooooo, it's a snake!","TSWO_SOFTWARE_snake"),
 		]),
-	]);
-
-</script>
-<link rel="stylesheet" href="packages.css"/>
-</head>
-<body>
-	<div id="herp"> </div>
-	<div id="derp"> </div>
-
-	<script type="text/javascript">
-		var containerPackages = new PackageContainer("herp","derp",testMenu);
+	]) );
 	</script>
 </body>
 </html>

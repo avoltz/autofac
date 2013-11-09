@@ -1,23 +1,89 @@
-#derp {
- position: relative;
- background: green;
-}
 a.parent-menu {
-border-style:solid;
-border-width:1px;
-font-size: small;
+ border-style:solid;
+ border-width:1px;
+ font-size: small;
+}
+div.menucontainer {
+ position: relative;
 }
 div.menu {
  position: absolute;
  top: 0; left: 0;
- background: blue;
 }
 div.menu span {
  font-weight: bold;
 }
 
 a.menu {
-font-style: italic;
-background: white;
-padding: 1px;
+ padding: 1px;
+}
+
+.menu a {
+ text-decoration: none;
+}
+
+.menuconfig {
+	font-family: monospace;
+	background: #00c;
+	padding: 0.2em 0.6em 2em 0.6em;
+}
+.menuconfig .cfg_header {
+	color: #6ee;
+	font-weight: bold;
+}
+.menuconfig HR { background: #6ee; border: 0px; height: 0.15em; }
+.menuconfig .cfg_foreground {
+	color: #000;
+	background: #ddd;
+	padding: 0.5em 0.3em;
+	position: relative;
+	text-align: center;
+	margin-left: 1em;
+	margin-right: 1.25em;
+	box-shadow: 1em 1.25em #000;
+	-moz-box-shadow: 1em 1.25em #000;
+	-webkit-box-shadow: 1em 1.25em #000;
+}
+.menuconfig .cfg_internal_header {
+	color: #00c;
+	position: relative; top: 0.65em;
+	margin: -0.75em auto 0em auto;
+	padding: 0em 1em;
+	text-align: center;
+	font-weight: bold;
+}
+.menuconfig .cfg_internal_header SPAN {
+	background: #ddd;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.menuconfig .cfg_internal {
+	text-align: left;
+	border: 2px outset;
+	border-bottom-width: 0px;
+	border-color: #fff #000 #000 #fff;
+	padding: 1em;
+}
+.menuconfig .cfg_control {
+	text-align: center;
+	border: 2px outset;
+	border-color: #fff #000 #000 #fff;
+	padding: 0.5em;
+}
+.menuconfig .cfg_menu {
+	border: 2px inset;
+	border-color: #000 #fff #fff #000;
+	padding: 0.4em;
+	padding-left: 2em;
+	margin-top: 0.5em;
+}
+
+.menuconfig a {
+ text-decoration: none;
+ color: #000;
+}
+.menuconfig a:hover {
+ color: #fff;
+ background: #00c;
 }
