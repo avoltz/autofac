@@ -27,6 +27,10 @@ function onClickSearch(e) {
 	pkgContInst.searchResult.style.display = "block";
 }
 
+function onChangePackageSelection(e) {
+	this.factoryItem.updateSelection(this.checked, Package.USER_SELECTED);
+}
+
 function createElement(element, clas) {
 	var node = document.createElement(element);
 	if(clas) node.className = clas;
@@ -69,6 +73,7 @@ var pkgContInst = null;
 function PackageContainer(containerDiv, menus) {
 	if(arguments.length == 0) return;
 	pkgContInst = this;
+	Package.finalizeHash();
 	// top-level array of menus
 	this.topMenu = menus;
 
@@ -153,28 +158,41 @@ MenuConfig.prototype = new PackageContainer();
 MenuConfig.prototype.constructor = MenuConfig;
 
 /* A package, with details */
-function Package(name,lic,ver,help,token) {
+function Package(name,lic,ver,help,token,state,depends) {
 	// ui package details
 	this.name = name;
 	this.license = lic;
 	this.version = ver;
 	this.help = help;
 	// what packages/names does this select?
-	this.selects = new Array(0);
+	this.selects = depends;
 	// token should be passed to factory 'TSWO_SOFTWARE_foo=y'
 	this.token = token;
 	// these tokens indicate if it is user selected or required
 	// by another package
-	this.user_selected = false;
+	this.state = state;
 	// which selected package requires this
 	this.required_by = new Array(0);
 	Package.packageHash[this.name.toLowerCase()] = this; // reflexive reference
 }
 Package.prototype.toString = function() { return "Pkg:" + this.token; }
 Package.packageHash = new Object();
+Package.USER_SELECTED = 1;
+Package.AUTO_SELECTED = 2;
 
-Package.prototype.isSelected = function() {
-	return (required > 0 || user_selected);
+Package.finalizeHash = function() {
+	// Call this once when the hash is entirely populated.
+
+	for (var pn in Package.packageHash) {
+		var pkg = Package.packageHash[pn];
+		for (var i=0; i<pkg.selects.length; i++) {
+			var dependency = Package.packageHash[
+						pkg.selects[i].toLowerCase()];
+			dependency.required_by.push(pkg);
+			if (pkg.state)
+				dependency.state |= Package.AUTO_SELECTED;
+		}
+	}
 }
 
 Package.prototype.getMenuLink = function(style) {
@@ -183,7 +201,57 @@ Package.prototype.getMenuLink = function(style) {
 	lbl.factoryItem = this;
 	lbl.onclick = onClickShowNext;
 	lbl.href = "javascript:void(0)";
-	return createElements("div", lbl);
+	var checkbox = createElement("input");
+	checkbox.type = "checkbox";
+	checkbox.factoryItem = this;
+	checkbox.id = this.getCheckboxName();
+	checkbox.onchange = onChangePackageSelection;
+	this.setCheckboxState(checkbox);
+	return createElements("div", [checkbox, lbl]);
+}
+Package.prototype.setCheckboxState = function(cb) {
+	cb.checked = (this.state != 0);
+	cb.disabled = (this.state & Package.AUTO_SELECTED);
+}
+Package.prototype.getCheckboxName = function() {
+	return "checkbox_" + this.name;
+}
+Package.prototype.getCheckbox = function() {
+	return document.getElementById(this.getCheckboxName());
+}
+
+Package.prototype.updateSelection = function(selected, mask) {
+	var oldSelState = (this.state != 0);
+	if (selected) {
+		this.state |=  mask;
+	} else { // de-select
+		var dmask = mask;
+		if (dmask & Package.AUTO_SELECTED) {
+			// Only unflag if all requiring packages are unselected.
+			for (var r=0; r<this.required_by.length; r++) {
+				if (this.required_by[r].state) {
+					dmask &= ~Package.AUTO_SELECTED;
+					break;
+				}
+			}
+		}
+		this.state &= ~dmask;
+	}
+
+	/* Always try to update the checkbox since we assume something must
+	 * have changed (selection state OR dependency state) */
+	var cb = this.getCheckbox();
+	if (cb) this.setCheckboxState(cb);
+
+	var newSelState = (this.state != 0);
+	if (oldSelState != newSelState) {
+		// Update dependencies.
+		for (var i=0; i<this.selects.length; i++) {
+			Package.packageHash[this.selects[i].toLowerCase()]
+				.updateSelection(newSelState,
+						 Package.AUTO_SELECTED);
+		}
+	}
 }
 
 Package.prototype.getView = function() {
