@@ -36,6 +36,10 @@ function createElementsAppend(node, contents) {
 		}
 	}
 }
+function removeChildren(element) {
+	while(element.childNodes.length)
+		element.removeChild(element.childNodes[0]);
+}
 
 var pkgContInst = null;
 
@@ -94,10 +98,7 @@ PackageContainer.prototype.showNext = function(next) {
 		this.containerHeight = menuHeight;
 	}
 
-	// Dispose of unwanted content now that it can't be seen.
-	while(old.childNodes.length)
-		old.removeChild(old.childNodes[0]);
-
+	removeChildren(old);
 }
 
 function MenuConfig(mcDiv, file, title, helptxt, menus) {
