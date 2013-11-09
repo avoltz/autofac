@@ -39,17 +39,22 @@ function PackageContainer(searchDiv,pkgDiv,menus) {
 
 PackageContainer.prototype.showNext = function(next) {
 	if (next == null || (next instanceof Menu && next.subs.length == 0)) return;
+	// Populate the backbuffer.
+	this.backbuffer.appendChild(next.getView());
+
+	// Flip "buffer" references.
 	var old = this.active;
 	this.active = this.backbuffer;
+	this.backbuffer = old;
+
+	// Change display so that the two won't be visible at the same time.
+	this.backbuffer.style.display = "none";
 	this.active.style.display = "block";
 
-	//clean em up up up.
+	// Dispose of unwanted content now that it can't be seen.
 	while(old.childNodes.length)
 		old.removeChild(old.childNodes[0]);
-	this.backbuffer = old;
-	this.backbuffer.style.display = "none";
 
-	this.active.appendChild(next.getView());
 }
 
 /* A package, with details */
