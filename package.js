@@ -4,6 +4,29 @@ function onClickShowNext(e) {
 	pkgContInst.showNext(this.factoryItem);
 }
 
+function onClickSearch(e) {
+	var str = pkgContInst.searchText.value.toLowerCase();
+	// Purge old results
+	pkgContInst.searchResult.style.display = "none";
+	removeChildren(pkgContInst.searchResult);
+	// try a whole name match and go to it
+	var pkg = Package.packageHash[str];
+	if (pkg != null) {
+		pkgContInst.showNext(pkg);
+		return;
+	}
+	// build a result list
+	var pkgNames = Object.keys(Package.packageHash);
+	for (var k = 0; k < pkgNames.length; k++) {
+		pkg = Package.packageHash[pkgNames[k]];
+		if (pkg.name.match(str)) {
+			pkgContInst.searchResult.appendChild(
+				pkg.getMenuLink("search-result"));
+		}
+	}
+	pkgContInst.searchResult.style.display = "block";
+}
+
 function createElement(element, clas) {
 	var node = document.createElement(element);
 	if(clas) node.className = clas;
@@ -57,10 +80,12 @@ function PackageContainer(containerDiv, menus) {
 	this.searchText = createElement("input");
 	this.searchText.type = "text";
 	this.searchResult = createElement("div");
+	var searchButton = createElements("button","Search");
+	searchButton.onclick = onClickSearch;
 	var searchDiv = createElements("div", [
 		//createElement("div"), // XXX Why is an unreferenced DIV here?
 		this.searchText,
-		createElements("button", "Search"),
+		searchButton,
 		this.searchResult ]);
 	
 	// then the package container with nav divs
@@ -143,7 +168,7 @@ function Package(name,lic,ver,help,token) {
 	this.user_selected = false;
 	// which selected package requires this
 	this.required_by = new Array(0);
-	Package.packageHash[this.token] = this; // reflexive reference
+	Package.packageHash[this.name.toLowerCase()] = this; // reflexive reference
 }
 Package.prototype.toString = function() { return "Pkg:" + this.token; }
 Package.packageHash = new Object();
