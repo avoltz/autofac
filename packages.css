@@ -82,6 +82,11 @@ a.menu {
 	margin: 0.5em 0px;
 }
 
+.menuconfig div.menu input {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
 .menuconfig a {
  text-decoration: none;
  color: #000;
