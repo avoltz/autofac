@@ -13,11 +13,10 @@ function onClickSearch(e) {
 	var pkg = Package.packageHash[str];
 	var exactMatch = (pkg) ? true : false;
 	// build a result list
-	var pkgNames = Object.keys(Package.packageHash);
 	var pkgMatches = [];
-	for (var k = 0; k < pkgNames.length; k++) {
-		pkg = Package.packageHash[pkgNames[k]];
-		if (pkg.name.match(str)) pkgMatches.push(pkg);
+	for (var k in Package.packageHash) {
+		pkg = Package.packageHash[k];
+		if (k.match(str)) pkgMatches.push(pkg);
 	}
 	if (pkgMatches.length == 1 && exactMatch) {
 		pkgContInst.showNext(pkgMatches[0]);
