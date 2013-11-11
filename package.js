@@ -5,8 +5,10 @@ function onClickShowNext(e) {
 }
 
 function onKeyDownSearch(e) {
-	var evt = (event || e);
-	if (evt.keyCode == 13) // Enter
+	// Do checks for multi-browser support
+	var evt = (e ? e : window.event);
+	var key = evt.keyCode || evt.which;
+	if (key == 13) // Enter
 		onClickSearch(e);
 }
 function onClickSearch(e) {
