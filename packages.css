@@ -72,11 +72,14 @@ a.menu {
 	padding: 0.5em;
 }
 .menuconfig .cfg_menu {
+}
+
+.menuconfig div.menucontainer, .menuconfig div.search {
 	border: 2px inset;
 	border-color: #000 #fff #fff #000;
 	padding: 0.4em;
 	padding-left: 2em;
-	margin-top: 0.5em;
+	margin: 0.5em 0px;
 }
 
 .menuconfig a {

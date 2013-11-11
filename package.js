@@ -87,7 +87,7 @@ function PackageContainer(containerDiv, menus) {
 	this.searchResult = createElement("div");
 	var searchButton = createElements("button","Search");
 	searchButton.onclick = onClickSearch;
-	var searchDiv = createElements("div", [
+	var searchDiv = createElements("div", "search", [
 		//createElement("div"), // XXX Why is an unreferenced DIV here?
 		this.searchText,
 		searchButton,
