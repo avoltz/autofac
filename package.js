@@ -4,6 +4,11 @@ function onClickShowNext(e) {
 	pkgContInst.showNext(this.factoryItem);
 }
 
+function onKeyDownSearch(e) {
+	var evt = (event || e);
+	if (evt.keyCode == 13) // Enter
+		onClickSearch(e);
+}
 function onClickSearch(e) {
 	var str = pkgContInst.searchText.value.toLowerCase();
 	// Purge old results
@@ -86,6 +91,7 @@ function PackageContainer(containerDiv, menus) {
 	// populate the search container with our widgets
 	this.searchText = createElement("input");
 	this.searchText.type = "text";
+	this.searchText.onkeydown = onKeyDownSearch;
 	this.searchResult = createElement("div");
 	var searchButton = createElements("button","Search");
 	searchButton.onclick = onClickSearch;
