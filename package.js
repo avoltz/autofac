@@ -11,17 +11,20 @@ function onClickSearch(e) {
 	removeChildren(pkgContInst.searchResult);
 	// try a whole name match and go to it
 	var pkg = Package.packageHash[str];
-	if (pkg != null) {
-		pkgContInst.showNext(pkg);
-		return;
-	}
+	var exactMatch = (pkg) ? true : false;
 	// build a result list
 	var pkgNames = Object.keys(Package.packageHash);
+	var pkgMatches = [];
 	for (var k = 0; k < pkgNames.length; k++) {
 		pkg = Package.packageHash[pkgNames[k]];
-		if (pkg.name.match(str)) {
+		if (pkg.name.match(str)) pkgMatches.push(pkg);
+	}
+	if (pkgMatches.length == 1 && exactMatch) {
+		pkgContInst.showNext(pkgMatches[0]);
+	} else {
+		while (pkgMatches.length) {
 			pkgContInst.searchResult.appendChild(
-				pkg.getMenuLink("search-result"));
+				pkgMatches.shift().getMenuLink("search-result"));
 		}
 	}
 	pkgContInst.searchResult.style.display = "block";
