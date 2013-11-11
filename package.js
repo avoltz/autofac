@@ -201,13 +201,17 @@ Package.prototype.getMenuLink = function(style) {
 	lbl.factoryItem = this;
 	lbl.onclick = onClickShowNext;
 	lbl.href = "javascript:void(0)";
+	return createElements("div", [this.createCheckbox(), lbl]);
+}
+
+Package.prototype.createCheckbox = function() {
 	var checkbox = createElement("input");
 	checkbox.type = "checkbox";
 	checkbox.factoryItem = this;
 	checkbox.id = this.getCheckboxName();
 	checkbox.onchange = onChangePackageSelection;
 	this.setCheckboxState(checkbox);
-	return createElements("div", [checkbox, lbl]);
+	return checkbox;
 }
 Package.prototype.setCheckboxState = function(cb) {
 	cb.checked = (this.state != 0);
@@ -216,6 +220,7 @@ Package.prototype.setCheckboxState = function(cb) {
 Package.prototype.getCheckboxName = function() {
 	return "checkbox_" + this.name;
 }
+
 Package.prototype.getCheckbox = function() {
 	return document.getElementById(this.getCheckboxName());
 }
