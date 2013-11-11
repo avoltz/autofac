@@ -175,6 +175,9 @@ function Package(name,lic,ver,help,token,state,depends) {
 	this.state = state;
 	// which selected package requires this
 	this.required_by = new Array(0);
+	// This package contains one package -- itself!
+	this.itemCount = 1;
+
 	Package.packageHash[this.name.toLowerCase()] = this; // reflexive reference
 }
 Package.prototype.toString = function() { return "Pkg:" + this.token; }
@@ -290,17 +293,21 @@ function Menu(name,subs) {
 	// children will be either menus, or packages
 	this.subs = subs;
 	this.parentMenu = null;
-	for(var i = 0; i < this.subs.length; i++)
+	this.itemCount = 0;
+	for(var i = 0; i < this.subs.length; i++) {
 		this.subs[i].parentMenu = this;
+		this.itemCount += this.subs[i].itemCount;
+	}
 }
 Menu.prototype.toString = function() { return "Menu:" + this.label; }
 
 // where in the menu tree are we, show the user calculate here, recursive search thru parents
 Menu.prototype.whereami = function () {
+	var label = this.label + " (" + this.itemCount + ")"
 	if (this.parentMenu != null) {
-		return (this.parentMenu.whereami() + " / " + this.label);
+		return (this.parentMenu.whereami() + " / " + label);
 	}
-	return this.label;
+	return label;
 };
 
 // return a DOM element showing a menu label
@@ -310,7 +317,7 @@ Menu.prototype.getMenuLink = function(style) {
 	lbl.factoryItem = this;
 	lbl.onclick = onClickShowNext;
 	lbl.href = "javascript:void(0)";
-	return createElements("div", lbl);
+	return createElements("div", [lbl, " (" + this.itemCount + ")"]);
 }
 
 /* Each menu has a label, a parent (or null if top-level),
