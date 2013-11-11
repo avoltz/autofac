@@ -28,12 +28,17 @@ function onClickSearch(e) {
 	if (pkgMatches.length == 1 && exactMatch) {
 		pkgContInst.showNext(pkgMatches[0]);
 	} else {
+		pkgMatches.sort(caseInsensitiveSort);
 		while (pkgMatches.length) {
 			pkgContInst.searchResult.appendChild(
 				pkgMatches.shift().getMenuLink("search-result"));
 		}
 	}
 	pkgContInst.searchResult.style.display = "block";
+}
+function caseInsensitiveSort(a,b) {
+	// Package names are unique, so only worry about < and > cases.
+	return (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
 }
 
 function onChangePackageSelection(e) {
