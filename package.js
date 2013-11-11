@@ -260,13 +260,24 @@ Package.prototype.updateSelection = function(selected, mask) {
 }
 
 Package.prototype.getView = function() {
+	var dependencies = createElement("div", "dependency-list");
+	for (var i=0; i<this.selects.length; i++) {
+		var pkg = Package.packageHash[this.selects[i].toLowerCase()];
+		dependencies.appendChild(pkg.getMenuLink("dependency"));
+	}
+	if (dependencies.childNodes.length == 0)
+		dependencies.appendChild(
+			document.createTextNode("No Package Dependencies"));
 	var view = createElements("div", [
 				  this.parentMenu.getMenuLink("parent-menu"),
 				  //createElement("div", "package"),
-				  createElements("div", this.name),
+				  createElements("div", [this.createCheckbox(),
+							 " " + this.name]),
 				  createElements("div", this.version),
 				  createElements("div", this.license),
 				  createElements("div", this.help),
+				  createElements("div", ["Dependencies:",
+							 dependencies]),
 				]);
 	return view;
 }
