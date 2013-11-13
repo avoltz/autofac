@@ -1,7 +1,10 @@
-a.parent-menu {
+div.breadcrumbs {
  border-style:solid;
  border-width:1px;
  font-size: small;
+}
+div.breadcrumbs div {
+ display: inline;
 }
 div.menucontainer {
  position: relative;

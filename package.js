@@ -124,6 +124,8 @@ function PackageContainer(containerDiv, menus) {
 PackageContainer.prototype.showNext = function(next) {
 	if (next == null || (next instanceof Menu && next.subs.length == 0)) return;
 	// Populate the backbuffer.
+	this.backbuffer.appendChild(next.buildBreadcrumbs(
+				createElement("div", "breadcrumbs"), " / "));
 	this.backbuffer.appendChild(next.getView());
 	this.setTitle(next);
 
@@ -300,7 +302,6 @@ Package.prototype.getView = function() {
 		dependencies.appendChild(
 			document.createTextNode("No Package Dependencies"));
 	var view = createElements("div", [
-				  this.parentMenu.getMenuLink("parent-menu"),
 				  //createElement("div", "package"),
 				  createElements("div", [this.createCheckbox(),
 							 " " + this.name]),
@@ -311,6 +312,14 @@ Package.prototype.getView = function() {
 							 dependencies]),
 				]);
 	return view;
+}
+
+Package.prototype.buildBreadcrumbs = function(div, sep) {
+	div.appendChild(createElements("span", this.name));
+	if (this.parentMenu) {
+		this.parentMenu.buildBreadcrumbs(div, sep);
+	}
+	return div;
 }
 
 /* A menu item. */
@@ -350,16 +359,25 @@ Menu.prototype.getMenuLink = function(style) {
    and several submenus or children.
    We get the label from each child for showing. */
 Menu.prototype.getView = function() {
-	//show path back
 	var view = createElement("div");
-	if (this.parentMenu != null) {
-		view.appendChild(this.parentMenu.getMenuLink("parent-menu"));
-	}
-	
-	// finally children
 	for (var i = 0; i < this.subs.length; i++) {
 		view.appendChild(this.subs[i].getMenuLink("menu"));
 	}
 	return view;
+}
+
+Menu.prototype.buildBreadcrumbs = function(div, sep) {
+	if (div.hasChildNodes()) {
+		div.insertBefore(document.createTextNode(sep), div.firstChild);
+		div.insertBefore(this.getMenuLink("parent-menu"),
+				 div.firstChild);
+	} else {
+		div.appendChild(createElements("span",
+				this.name + " (" + this.itemCount + ")"));
+	}
+	if (this.parentMenu) {
+		this.parentMenu.buildBreadcrumbs(div, sep);
+	}
+	return div;
 }
 
