@@ -4,6 +4,10 @@ function onClickShowNext(e) {
 	pkgContInst.showNext(this.factoryItem);
 }
 
+function onClickSubmitWorkorder(e) {
+	pkgContInst.submitWorkorder();
+}
+
 function onKeyDownSearch(e) {
 	// Do checks for multi-browser support
 	var evt = (e ? e : window.event);
@@ -155,6 +159,25 @@ PackageContainer.prototype.setTitle = function(current) {
 	 */
 }
 
+PackageContainer.prototype.submitWorkorder = function() {
+	var form = createElement("form");
+	//XXX Set form.action to submit this someplace
+	form.method = "post";
+	for (var k in Package.packageHash) {
+		var pkg = Package.packageHash[k];
+		var tkn = createElement("input");
+		tkn.type = "hidden";
+		tkn.name = pkg.token;
+		tkn.value = (pkg.state & Package.USER_SELECTED) ? "y" : "n";
+		form.appendChild(tkn);
+	}
+	// The form must be on-page in order to be submitted...
+	this.backbuffer.appendChild(form);
+	form.submit();
+	// but we don't want it to stay around, so clean-up
+	this.backbuffer.removeChild(form);
+}
+
 function MenuConfig(mcDiv, file, title, helptxt, menus) {
 	if (typeof mcDiv == "string")
 		mcDiv = document.getElementById(mcDiv);
@@ -163,10 +186,14 @@ function MenuConfig(mcDiv, file, title, helptxt, menus) {
 					file + ' - ' + title));
 	mcDiv.appendChild(createElement("hr"));
 
+	this.exitButton = createElements("a", "<Exit>");
+	this.exitButton.href = "javascript:void(0);";
 	var menuDiv = createElement("div", "cfg_menu");
 	//TODO: Make these actual buttons that do something
 	var control = createElements("div", "cfg_control",
-				    "<Select> <Exit> <Help>");
+				     ["<Select> ",
+				      this.exitButton,
+				      " <Help>"]);
 
 	this.titleElement = createElement("span");
 	var fg = createElements("div", "cfg_foreground", [
@@ -185,6 +212,16 @@ MenuConfig.prototype.constructor = MenuConfig;
 MenuConfig.prototype.setTitle = function(current) {
 	removeChildren(this.titleElement);
 	this.titleElement.appendChild(document.createTextNode(current.name));
+}
+
+MenuConfig.prototype.showNext = function(next) {
+	PackageContainer.prototype.showNext.apply(this, arguments);
+	if (next.parentMenu) {
+		this.exitButton.factoryItem = next.parentMenu;
+		this.exitButton.onclick = onClickShowNext;
+	} else {
+		this.exitButton.onclick = onClickSubmitWorkorder;
+	}
 }
 
 /* A package, with details */
