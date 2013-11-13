@@ -125,6 +125,7 @@ PackageContainer.prototype.showNext = function(next) {
 	if (next == null || (next instanceof Menu && next.subs.length == 0)) return;
 	// Populate the backbuffer.
 	this.backbuffer.appendChild(next.getView());
+	this.setTitle(next);
 
 	// Flip "buffer" references.
 	var old = this.active;
@@ -146,6 +147,12 @@ PackageContainer.prototype.showNext = function(next) {
 	removeChildren(old);
 }
 
+PackageContainer.prototype.setTitle = function(current) {
+	/* This should only ever be overridden based on a particular viewing
+	 * style, likely with the use of whereami()
+	 */
+}
+
 function MenuConfig(mcDiv, file, title, helptxt, menus) {
 	if (typeof mcDiv == "string")
 		mcDiv = document.getElementById(mcDiv);
@@ -159,9 +166,10 @@ function MenuConfig(mcDiv, file, title, helptxt, menus) {
 	var control = createElements("div", "cfg_control",
 				    "<Select> <Exit> <Help>");
 
+	this.titleElement = createElement("span");
 	var fg = createElements("div", "cfg_foreground", [
 			createElements("div", "cfg_internal_header",
-				createElements("span", title)),
+				this.titleElement),
 			createElements("div", "cfg_internal",
 				[ helptxt, menuDiv ]),
 			control]);
@@ -171,6 +179,11 @@ function MenuConfig(mcDiv, file, title, helptxt, menus) {
 }
 MenuConfig.prototype = new PackageContainer();
 MenuConfig.prototype.constructor = MenuConfig;
+
+MenuConfig.prototype.setTitle = function(current) {
+	removeChildren(this.titleElement);
+	this.titleElement.appendChild(document.createTextNode(current.name));
+}
 
 /* A package, with details */
 function Package(name,lic,ver,help,token,state,depends) {
@@ -344,12 +357,9 @@ Menu.prototype.getView = function() {
 	} else { 
 		view = this.parentMenu.getMenuLink("parent-menu");
 	}
-	var div = createElements("div", "menu-location", this.whereami());
-	// then location
-	view.appendChild(div);
 	
 	// finally children
-	div = createElement("div", "menu");
+	var div = createElement("div", "menu");
 	view.appendChild(div);
 	for (var i = 0; i < this.subs.length; i++) {
 		view.appendChild(this.subs[i].getMenuLink("menu"));
