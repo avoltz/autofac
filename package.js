@@ -302,7 +302,7 @@ Package.prototype.getView = function() {
 
 /* A menu item. */
 function Menu(name,subs) {
-	this.label = (name == null ? "" : name);
+	this.name = (name == null ? "" : name);
 	// children will be either menus, or packages
 	this.subs = subs;
 	this.parentMenu = null;
@@ -312,11 +312,11 @@ function Menu(name,subs) {
 		this.itemCount += this.subs[i].itemCount;
 	}
 }
-Menu.prototype.toString = function() { return "Menu:" + this.label; }
+Menu.prototype.toString = function() { return "Menu:" + this.name; }
 
 // where in the menu tree are we, show the user calculate here, recursive search thru parents
 Menu.prototype.whereami = function () {
-	var label = this.label + " (" + this.itemCount + ")"
+	var label = this.name + " (" + this.itemCount + ")"
 	if (this.parentMenu != null) {
 		return (this.parentMenu.whereami() + " / " + label);
 	}
@@ -326,7 +326,7 @@ Menu.prototype.whereami = function () {
 // return a DOM element showing a menu label
 Menu.prototype.getMenuLink = function(style) {
 	var lbldiv = createElement("div");
-	var lbl = createElements("a", style, this.label);
+	var lbl = createElements("a", style, this.name);
 	lbl.factoryItem = this;
 	lbl.onclick = onClickShowNext;
 	lbl.href = "javascript:void(0)";
