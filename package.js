@@ -351,16 +351,12 @@ Menu.prototype.getMenuLink = function(style) {
    We get the label from each child for showing. */
 Menu.prototype.getView = function() {
 	//show path back
-	var view;
-	if (this.parentMenu == null) {
-		view = createElement("div");
-	} else { 
-		view = this.parentMenu.getMenuLink("parent-menu");
+	var view = createElement("div");
+	if (this.parentMenu != null) {
+		view.appendChild(this.parentMenu.getMenuLink("parent-menu"));
 	}
 	
 	// finally children
-	var div = createElement("div", "menu");
-	view.appendChild(div);
 	for (var i = 0; i < this.subs.length; i++) {
 		view.appendChild(this.subs[i].getMenuLink("menu"));
 	}
