@@ -278,7 +278,7 @@ Package.prototype.createCheckbox = function() {
 	var checkbox = createElement("input");
 	checkbox.type = "checkbox";
 	checkbox.factoryItem = this;
-	checkbox.id = this.getCheckboxName();
+	checkbox.name = this.getCheckboxName();
 	checkbox.onchange = onChangePackageSelection;
 	this.setCheckboxState(checkbox);
 	return checkbox;
@@ -289,10 +289,6 @@ Package.prototype.setCheckboxState = function(cb) {
 }
 Package.prototype.getCheckboxName = function() {
 	return "checkbox_" + this.name;
-}
-
-Package.prototype.getCheckbox = function() {
-	return document.getElementById(this.getCheckboxName());
 }
 
 Package.prototype.updateSelection = function(selected, mask) {
@@ -313,10 +309,14 @@ Package.prototype.updateSelection = function(selected, mask) {
 		this.state &= ~dmask;
 	}
 
-	/* Always try to update the checkbox since we assume something must
-	 * have changed (selection state OR dependency state) */
-	var cb = this.getCheckbox();
-	if (cb) this.setCheckboxState(cb);
+	/* Always try to update the checkboxes since we assume something must
+	 * have changed (selection state OR dependency state).
+	 * Multiple checkboxes could appear for the same item due to search
+	 * results and various viewing panes, so make sure we update them all.
+	 */
+	var cb = document.getElementsByName(this.getCheckboxName());
+	for (var i=0; i<cb.length; i++)
+		this.setCheckboxState(cb[i]);
 
 	var newSelState = (this.state != 0);
 	if (oldSelState != newSelState) {
