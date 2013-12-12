@@ -47,6 +47,7 @@ function caseInsensitiveSort(a,b) {
 
 function onChangePackageSelection(e) {
 	this.factoryItem.updateSelection(this.checked, Package.USER_SELECTED);
+	pkgContInst.updatePackageStats();
 }
 
 function createElement(element, clas) {
@@ -91,6 +92,11 @@ var pkgContInst = null;
 function PackageContainer(containerDiv, menus) {
 	if(arguments.length == 0) return;
 	pkgContInst = this;
+	// arrays for convenient lookup
+	this.user_selected = [];
+	this.dep_selected = [];
+	this.installSize = 0;
+	this.buildTime = 0;
 	Package.finalizeHash();
 	// top-level array of menus
 	this.topMenu = menus;
@@ -98,6 +104,12 @@ function PackageContainer(containerDiv, menus) {
 	// create current menu
 	this.active = createElement("div", "menu");
 	this.backbuffer = createElement("div", "menu");
+
+	// common statistic displays (associated with display element later)
+	this.statUserSelPkgs = createElement("span");
+	this.statAutoSelPkgs = createElement("span");
+	this.statSelPkgsSize = createElement("span");
+	this.statSelPkgsTime = createElement("span");
 
 	// populate the search container with our widgets
 	this.searchText = createElement("input");
@@ -107,7 +119,15 @@ function PackageContainer(containerDiv, menus) {
 	var searchButton = createElements("button","Search");
 	searchButton.onclick = onClickSearch;
 	var searchDiv = createElements("div", "search", [
-		//createElement("div"), // XXX Why is an unreferenced DIV here?
+		createElements("div", "statistics", [
+			createElements("div", [ "Selected Packages: ",
+						this.statUserSelPkgs ]),
+			createElements("div", [ "Package Dependencies: ",
+						this.statAutoSelPkgs ]),
+			createElements("div", [ "Estimated Install Size: ",
+						this.statSelPkgsSize ]),
+			createElements("div", [ "Estimated Build Time: ",
+						this.statSelPkgsTime ]) ]),
 		this.searchText,
 		searchButton,
 		this.searchResult ]);
@@ -123,7 +143,9 @@ function PackageContainer(containerDiv, menus) {
 	containerDiv.appendChild(this.container);
 
 	this.showNext(this.topMenu);
+	this.updatePackageStats();
 }
+
 
 PackageContainer.prototype.showNext = function(next) {
 	if (next == null || (next instanceof Menu && next.subs.length == 0)) return;
@@ -157,6 +179,20 @@ PackageContainer.prototype.setTitle = function(current) {
 	/* This should only ever be overridden based on a particular viewing
 	 * style, likely with the use of whereami()
 	 */
+}
+
+PackageContainer.prototype.updatePackageStats = function() {
+	/* We don't want to call this after every statistic change; try to call
+	 * it once when all changes from a single action (user [de/]selection)
+	 * have been processed. */
+	var actions = [	this.statUserSelPkgs,	this.user_selected.length,
+			this.statAutoSelPkgs,	this.dep_selected.length,
+			this.statSelPkgsSize,	this.installSize,
+			this.statSelPkgsTime,	this.buildTime ];
+	for (var i=0; i<actions.length; i+=2) {
+		removeChildren(actions[i]);
+		actions[i].appendChild(document.createTextNode(actions[i+1]));
+	}
 }
 
 PackageContainer.prototype.submitWorkorder = function() {
@@ -225,7 +261,7 @@ MenuConfig.prototype.showNext = function(next) {
 }
 
 /* A package, with details */
-function Package(name,lic,ver,help,token,state,depends) {
+function Package(name,lic,ver,help,token,state,depends,buildtime,installsize) {
 	// ui package details
 	this.name = name;
 	this.license = lic;
@@ -242,6 +278,8 @@ function Package(name,lic,ver,help,token,state,depends) {
 	this.required_by = new Array(0);
 	// This package contains one package -- itself!
 	this.itemCount = 1;
+	this.buildTime = buildtime;
+	this.installSize = installsize;
 
 	Package.packageHash[this.name.toLowerCase()] = this; // reflexive reference
 }
@@ -250,9 +288,9 @@ Package.packageHash = new Object();
 Package.USER_SELECTED = 1;
 Package.AUTO_SELECTED = 2;
 
+
 Package.finalizeHash = function() {
 	// Call this once when the hash is entirely populated.
-
 	for (var pn in Package.packageHash) {
 		var pkg = Package.packageHash[pn];
 		for (var i=0; i<pkg.selects.length; i++) {
@@ -260,9 +298,71 @@ Package.finalizeHash = function() {
 						pkg.selects[i].toLowerCase()];
 			dependency.required_by.push(pkg);
 			if (pkg.state)
-				dependency.state |= Package.AUTO_SELECTED;
+				dependency.select(Package.AUTO_SELECTED);
+		}
+		if (pkg.state & Package.USER_SELECTED) {
+			//THIS IS UGLY FIXME
+			pkg.state = 0;
+			pkg.select(Package.USER_SELECTED);
 		}
 	}
+}
+
+/* these functions manipulate the sorted arrays of selected packages,
+   and dep selected packages, for use in UI */
+Package.addPackageToList = function(arr,pkg) {
+	// search for place to add, then add
+	// position to add, if -1, array is empty
+	var pos=0;
+	while (pos < arr.length && pkg.name > arr[pos].name) {
+		pos++;
+	}
+	arr.splice(pos,0,pkg);
+}
+
+Package.removePackageFromList = function(arr,pkg) {
+	// search for place to remove ,then remove.
+	var pos = arr.indexOf(pkg);
+	arr.splice(pos,1);
+}
+
+Package.prototype.select = function(mask) {
+	if (this.state & mask) return; // nothing to do
+	if (mask & Package.USER_SELECTED) {
+		Package.addPackageToList(pkgContInst.user_selected,this);
+		if (this.state & Package.AUTO_SELECTED)
+			Package.removePackageFromList(pkgContInst.dep_selected,
+						      this);
+	} else {
+		if (!(this.state & Package.USER_SELECTED))
+			Package.addPackageToList(pkgContInst.dep_selected,this);
+	}
+	if (!this.state) {
+		pkgContInst.installSize += this.installSize;
+		pkgContInst.buildTime += this.buildTime;
+	}
+	this.state |= mask;
+}
+
+Package.prototype.deselect = function(dmask) {
+	if (!(this.state & dmask)) return; // nothing to do
+	if (dmask & Package.USER_SELECTED) {
+		Package.removePackageFromList(pkgContInst.user_selected,this);
+		if (this.state & Package.AUTO_SELECTED)
+			Package.addPackageToList(pkgContInst.dep_selected,this);
+	} else {
+		// Only unflag if all requiring packages are unselected.
+		for (var r=0; r<this.required_by.length; r++) {
+			if (this.required_by[r].state)
+				return; // still a dep; nothing to do
+		}
+		Package.removePackageFromList(pkgContInst.dep_selected,this);
+	}
+	if (this.state) {
+		pkgContInst.installSize -= this.installSize;
+		pkgContInst.buildTime -= this.buildTime;
+	}
+	this.state &= ~dmask;
 }
 
 Package.prototype.getMenuLink = function(style) {
@@ -294,19 +394,9 @@ Package.prototype.getCheckboxName = function() {
 Package.prototype.updateSelection = function(selected, mask) {
 	var oldSelState = (this.state != 0);
 	if (selected) {
-		this.state |=  mask;
+		this.select(mask);
 	} else { // de-select
-		var dmask = mask;
-		if (dmask & Package.AUTO_SELECTED) {
-			// Only unflag if all requiring packages are unselected.
-			for (var r=0; r<this.required_by.length; r++) {
-				if (this.required_by[r].state) {
-					dmask &= ~Package.AUTO_SELECTED;
-					break;
-				}
-			}
-		}
-		this.state &= ~dmask;
+		this.deselect(mask);
 	}
 
 	/* Always try to update the checkboxes since we assume something must
