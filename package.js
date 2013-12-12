@@ -115,7 +115,7 @@ function PackageContainer(containerDiv, menus) {
 	this.searchText = createElement("input");
 	this.searchText.type = "text";
 	this.searchText.onkeydown = onKeyDownSearch;
-	this.searchResult = createElement("div");
+	this.searchResult = createElement("div", "search-result-list");
 	var searchButton = createElements("button","Search");
 	searchButton.onclick = onClickSearch;
 	var searchDiv = createElements("div", "search", [
@@ -434,7 +434,7 @@ Package.prototype.getView = function() {
 							 " " + this.name]),
 				  createElements("div", this.version),
 				  createElements("div", this.license),
-				  createElements("div", this.help),
+				  createElements("div", "package-help", this.help),
 				  createElements("div", ["Dependencies:",
 							 dependencies]),
 				]);
