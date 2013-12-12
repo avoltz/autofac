@@ -1,0 +1,88 @@
+body { 
+ font-family: georgia, serif;
+ background-color: #eee;
+}
+
+h1 {
+ font-family: arial;
+}
+
+a:link { 
+ text-decoration: none;
+ color: rgb(64, 130, 148)
+}
+
+a:visited {
+ text-decoration: none;
+ color: rgb(64, 130, 148)
+}
+
+a:hover {
+ text-decoration: underline;
+}
+
+div.menucontainer {
+ position: relative;
+}
+
+div.statistics {
+ margin: 0.5em 0.5em 0.5em 1em;
+ font-size: smaller;
+}
+
+.package-help {
+ font-family: monospace;
+ margin-left: 10px;
+ margin-top: 5px;
+ margin-bottom: 5px;
+}
+
+.dependency-list {
+ border-top-style: dotted;
+ border-color: #aaa;
+ border-size:1px;
+ padding-left: 1.5em;
+}
+
+.search {
+ margin-bottom:20px;
+}
+
+.search-result-list {
+ margin-top: 20px;
+ border-bottom-style: solid;
+ border-size:1px;
+ border-color: #aaa;
+}
+
+
+.menuconfig {
+ font-family: georgia, serif;
+
+}
+
+.package {
+ background-color: #fff;
+}
+
+div.menu {
+ border-color: #ccc;
+ border-size: 1px;
+}
+.menu {
+ font-size: normal;
+ margin-left:15px;
+ margin-bottom:5px;
+}
+
+div.breadcrumbs {
+ margin-bottom:12px;
+} 
+
+div.breadcrumbs div {
+ display: inline;
+}
+
+.menu-location {
+ display: none;
+}
